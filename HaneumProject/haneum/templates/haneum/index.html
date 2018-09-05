@@ -1,38 +1,49 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width" , initial-scale="1">
-<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
-<link rel="stylesheet" href="{% static 'haneum/style.css' %}">
-<style type="text/css">
-.jumbotron {
-	background-image: url("{% static 'haneum/background.jpg' %}");
-	background-size: cover;
-	text-shadow: black 0.2em 0.2em 0.2em;
-	color: white;
-}
-</style>
-<title>haneum</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width" , initial-scale="1">
+	<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'haneum/style.css' %}">
+	<style type="text/css">
+		.jumbotron {
+			background-image: url("{% static 'haneum/background.jpg' %}");
+			background-size: cover;
+			text-shadow: black 0.2em 0.2em 0.2em;
+			color: white;
+		}
+
+		div.tooltip {
+			position: absolute;
+			text-align: center;
+			width: 100px;
+			height: 50px;
+			padding: 2px;
+			font: 12px sans-serif;
+			background: lightsteelblue;
+			border: 0px;
+			border-radius: 4px;
+			pointer-events: none;
+		}
+	</style>
+	<title>haneum</title>
 </head>
+
 <body>
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed"
-					data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
-					aria-expanded="false">
-					<span class="sr-only"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span> <span class="icon-bar"></span>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+				 aria-expanded="false">
+					<span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="">부채 예측</a>
 			</div>
-			<div class="collapse navbar-collapse"
-				id="bs-example-navbar-collapse-1">
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="#search">검색<span
-							class="sr-only"></span></a></li>
+					<li class="active"><a href="#search">검색<span class="sr-only"></span></a></li>
 					<li><a href="#articles">기사</a></li>
 					<li><a href="#analysis">분석</a></li>
 					<li><a href="#prediction">예측</a></li>
@@ -47,13 +58,19 @@
 				본 프로젝트는 부채기업 예측 서비스입니다.<br>확인하고 싶은 기업의 재무정보를 업로드해주세요.
 			</p>
 			<p class="text-center">
-				<a class="btn btn-primary btn-lg" data-target="#modal"
-					data-toggle="modal" role="button">재무정보 업로드</a>
+				<a class="btn btn-primary btn-lg" data-target="#modal" data-toggle="modal" role="button">재무정보 업로드</a>
 			</p>
 		</div>
 	</div>
+	<hr>
 	<div class="container" id="articles"></div>
-	<div class="container" id="analysis"></div>
+	<hr>
+	<div class="container" id="analysis">
+		<p class="text-center">
+			<svg width="960" height="500"></svg>
+		</p>
+	</div>
+	<hr>
 	<div class="container" id="prediction"></div>
 	<footer style="background-color: #000000; color: #ffffff">
 		<div class="container">
@@ -70,19 +87,15 @@
 				<div class="col-sm-2">
 					<h4 style="text-align: center;">내비게이션</h4>
 					<div class="list-group">
-						<a href="#search" class="list-group-item">검색</a> <a
-							href="#articles" class="list-group-item">기사</a> <a
-							href="#analysis" class="list-group-item">분석</a> <a
-							href="#prediction" class="list-group-item">예측</a>
+						<a href="#search" class="list-group-item">검색</a> <a href="#articles" class="list-group-item">기사</a> <a href="#analysis"
+						 class="list-group-item">분석</a> <a href="#prediction" class="list-group-item">예측</a>
 					</div>
 				</div>
 				<div class="col-sm-2">
 					<h4 style="text-align: center;">팀 소개</h4>
 					<div class="list-group">
-						<a href="#" class="list-group-item">팀원1</a> <a href="#"
-							class="list-group-item">팀원2</a> <a href="#"
-							class="list-group-item">팀원3</a> <a href="#"
-							class="list-group-item">팀원4</a>
+						<a href="#" class="list-group-item">팀원1</a> <a href="#" class="list-group-item">팀원2</a> <a href="#" class="list-group-item">팀원3</a>
+						<a href="#" class="list-group-item">팀원4</a>
 					</div>
 				</div>
 				<div class="col-sm-2">
@@ -102,13 +115,21 @@
 						<button class="close" data-dismiss="modal">&times;</button>
 					</div>
 					<div class="modal-body">
-						<span style="text-align: center;">재무정보 기재양식을 다운받은 후, 양식에 맞게
-							정보를 기재해 주세요.<br>업로드 해주신 파일은 분석 및 예측에 사용된 후 바로 삭제됩니다.
-						</span><br>
-						<form action="./upload" method="post"
-							enctype="multipart/form-data">
-							{% csrf_token %} File:&nbsp; <input type="file" name="file"
-								id="id_file" /><br> <input type="submit" value="UPLOAD" />
+						<div style="text-align: center;">
+							<p>재무정보 기재양식을 다운받은 후, 양식에 맞게 정보를 기재해 주세요.<br>업로드 해주신 파일은 분석 및 예측에 사용된 후 바로 삭제됩니다.</p>
+						</div>
+						<form action="./upload" method="post" enctype="multipart/form-data">{% csrf_token %}
+							<div class="row">
+								<div class="col-md-offset-1 col-sm-2">
+									<a id="download" class="btn btn-primary" role="button" href="#">양식 다운로드</a>
+								</div>
+								<div class="col-md-offset-1 col-sm-3">
+									<p><input type="file" name="file" id="id_file" /></p>
+								</div>
+								<div class="col-md-offset-1 col-sm-3">
+									<input class="btn btn-primary" type="submit" value="파일 업로드" />
+								</div>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -119,7 +140,153 @@
 <script src="{% static 'jquery/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
 <script src="{% static 'd3/d3.min.js' %}"></script>
+<script src="{% static 'haneum/data/sample.js' %}"></script>
 <script type="text/javascript">
-	
+
+	data = data.filter(d => d.CompanyName == '3S');
+
+	let parseDate = d3.timeParse("%Y");
+
+	function parsing(d) {
+		d.Year = parseDate(d.Year);
+		return d;
+	}
+
+	data = data.map(parsing);
+
+	let svg = d3.select("svg");
+	let margin = { top: 20, right: 20, bottom: 20, left: 90 };  // left: 40
+	let width = +svg.attr("width") - margin.left - margin.right;
+	let height = +svg.attr("height") - margin.top - margin.bottom;
+
+	let chart = svg
+		.append('g')
+		.attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+
+	let x = d3
+		.scaleTime()
+		.domain(d3.extent(data, d => d.Year))
+		.range([0, width]);
+
+	let totalLiabilities = d3.max(data, d => d.TotalLiabilities);
+	let totalCapital = d3.max(data, d => d.TotalCapital);
+	let yMax = totalLiabilities;
+	if (yMax < totalCapital) {
+		yMax = totalCapital
+	};
+
+	let y = d3
+		.scaleLinear()
+		.domain([0, yMax])
+		.range([height, 0]);
+
+	let xAxis = d3.axisBottom(x);
+	let yAxis = d3.axisLeft(y);
+
+	chart
+		.append('g')
+		.attr('transform', 'translate(0, ' + height + ')')
+		.call(xAxis);
+
+	chart
+		.append('g')
+		.call(yAxis);
+
+	let totalLiabilitiesLine = d3.line()
+		.x(d => x(d.Year))
+		.y(d => y(d.TotalLiabilities));
+
+	let totalCapitalLine = d3.line()
+		.x(d => x(d.Year))
+		.y(d => y(d.TotalCapital))
+	//.curve(d3.curveMonotoneX);
+
+	chart
+		.append('path')
+		.data([data])
+		.attr('fill', 'none')
+		.attr('stroke', 'darkred')
+		.attr('stroke-width', 2)
+		.attr('d', totalLiabilitiesLine);
+
+	chart
+		.append('path')
+		.datum(data)
+		.attr('fill', 'none')
+		.attr('stroke', 'steelblue')
+		.attr('stroke-width', 2)
+		.attr('d', totalCapitalLine);
+
+	chart
+		.selectAll('dot')
+		.data(data)
+		.enter()
+		.append('circle')
+		.attr('r', 3)
+		.attr('cx', d => x(d.Year))
+		.attr('cy', d => y(d.TotalLiabilities))
+		.attr('class', 'totalLiabilitiesdots')
+		.style('fill', 'darkred');
+
+	chart
+		.selectAll('dot')
+		.data(data)
+		.enter()
+		.append('circle')
+		.attr('r', 3)
+		.attr('cx', d => x(d.Year))
+		.attr('cy', d => y(d.TotalCapital))
+		.attr('class', 'totalCapitaldots')
+		.style('fill', 'steelblue');
+
+	let div = d3
+		.select('body')
+		.append('div')
+		.attr('class', 'tooltip')
+		.style('opacity', 0);
+
+	let formatTime = d3.timeFormat('%Y');
+
+	chart
+		.selectAll('.totalLiabilitiesdots')
+		.on('mouseover', d => {
+			div
+				.transition()
+				.duration(200)
+				.style('opacity', 0.9);
+			div
+				.html('년도 : ' + formatTime(d.Year) + '<br/>' +
+					'부채총계 : ' + '￦' + Number(d.TotalLiabilities).toLocaleString('en'))
+				.style('left', (d3.event.pageX + 5) + 'px')
+				.style('top', (d3.event.pageY - 35) + 'px');
+		})
+		.on('mouseout', d => {
+			div
+				.transition()
+				.duration(500)
+				.style("opacity", 0);
+		});
+
+	chart
+		.selectAll('.totalCapitaldots')
+		.on('mouseover', d => {
+			div
+				.transition()
+				.duration(200)
+				.style('opacity', 0.9);
+			div
+				.html('년도 : ' + formatTime(d.Year) + '<br/>' +
+					'자본총계 : ' + '￦' + Number(d.TotalCapital).toLocaleString('en'))
+				.style('left', (d3.event.pageX + 5) + 'px')
+				.style('top', (d3.event.pageY - 35) + 'px');
+		})
+		.on('mouseout', d => {
+			div
+				.transition()
+				.duration(500)
+				.style("opacity", 0);
+		});
+
 </script>
+
 </html>
