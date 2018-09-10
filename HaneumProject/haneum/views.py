@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from django.http.response import HttpResponse, FileResponse
+from django.http.response import HttpResponse, FileResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-import json
 from HaneumProject.settings import STATICFILES_DIRS
+import os
+import shutil
+import json
 
 # Create your views here.
 
@@ -12,42 +14,48 @@ def index(request):
     return render(request, 'haneum/index.html', context)
 
 
-def search(request):
-    # 데이터를 전달할 JSON 객체 선언
-    data = {}
-    # 데이터 저장 성공 여부 설정(디폴트 값: 0 - 성공)
-    data['status'] = 0  # success
-    try:
-        # 데이터 획득 작업 수행
-        
-        # data JSON에 전달할 데이터를 저장
-        data['test'] = 'test'
-    except Exception:
-         # 데이터 저장 성공 여부 설정(1 - 실패)
-        data['status'] = 1  # fail
-    # JSON 객체를 JSON String으로 변환 후 반환
-    response = json.dumps(data)
-    return HttpResponse(response)
-
 @csrf_exempt
 def upload(reqeust):
     status = 0
+    return_jsonString = '[]'
     if reqeust.method == 'POST':
         if 'file' in reqeust.FILES:
             file = reqeust.FILES['file']
             filename = file._name
-            
+
             upload_root = STATICFILES_DIRS[0] + '\\haneum\\upload'
-            print( '%s\\%s' % (upload_root, filename) )
-            upload_file = open('%s\\%s' % (upload_root, filename) , 'wb')
+            upload_file = open('%s\\%s' % (upload_root, filename), 'wb')
             for chunk in file.chunks():
                 upload_file.write(chunk)
             upload_file.close()
+
+            # 업로드 파일로 작업 수행
+
+            ### 개발 테스트용 코드 ###
+            json_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
+            json_filename = 'sample.json'
+            jsonString = open('%s\\%s' % (json_root, json_filename)).read()
             status = 1
-    return HttpResponse(status)
+            return_json = {
+                "status": status,
+                "jsonList": jsonString
+            }
+            return_jsonString = json.dumps(return_json)
+            #########################
+
+            shutil.rmtree(upload_root)
+            os.mkdir(upload_root)
+            status = 1
+    return HttpResponse(return_jsonString)
+
 
 def download(request):
     download_root = STATICFILES_DIRS[0] + '\\haneum\\download'
-    download_file = open('%s\\%s' % (download_root, 'finance.xlsx') , 'rb')
-    response = FileResponse(download_file, content_type='application/vnd.ms-excel')
-    return response
+    filename = 'form.xlsx'
+    with open('%s\\%s' % (download_root, filename), 'rb') as download_file:
+        response = HttpResponse(
+            download_file, content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % (
+            filename)
+        return response
+    raise Http404
