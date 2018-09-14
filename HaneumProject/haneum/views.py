@@ -2,12 +2,14 @@ from django.shortcuts import render
 from django.http.response import HttpResponse, FileResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from HaneumProject.settings import STATICFILES_DIRS
+import logging
 import os
 import shutil
 import json
 
 # Create your views here.
 
+logger = logging.getLogger(__name__)
 
 def index(request):
     context = {}
@@ -16,36 +18,44 @@ def index(request):
 
 @csrf_exempt
 def upload(reqeust):
-    status = 0
-    return_jsonString = '[]'
+    return_json = {
+        'status': 0
+    }
     if reqeust.method == 'POST':
+        logger.info(reqeust.FILES)
         if 'file' in reqeust.FILES:
             file = reqeust.FILES['file']
             filename = file._name
-
+            logger.info(filename)
+            
+            '''
             upload_root = STATICFILES_DIRS[0] + '\\haneum\\upload'
             upload_file = open('%s\\%s' % (upload_root, filename), 'wb')
             for chunk in file.chunks():
                 upload_file.write(chunk)
             upload_file.close()
-
+           
             # 업로드 파일로 작업 수행
-
-            ### 개발 테스트용 코드 ###
-            json_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
-            json_filename = 'sample.json'
-            jsonString = open('%s\\%s' % (json_root, json_filename)).read()
-            status = 1
-            return_json = {
-                "status": status,
-                "jsonList": jsonString
-            }
-            return_jsonString = json.dumps(return_json)
-            #########################
 
             shutil.rmtree(upload_root)
             os.mkdir(upload_root)
-            status = 1
+            return_json['status'] = 1
+            '''
+
+            # 업로드 파일로 작업 수행
+            file.read()
+
+            return_json['status'] = 1
+
+    ### 개발 테스트용 코드 ###
+    json_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
+    json_filename = 'sample.json'
+    with open('%s\\%s' % (json_root, json_filename)) as json_file:
+        return_json["data"] = json.load(json_file)
+    return_json['status'] = 1
+    #########################
+
+    return_jsonString = json.dumps(return_json)
     return HttpResponse(return_jsonString)
 
 
