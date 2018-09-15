@@ -1,37 +1,66 @@
-$("#upload").on('submit', function (event) {
+//$("#upload").on('submit', function (event) {
 
-	event.preventDefault();
+	// $.ajax({
+	// 	url: "./upload",
+	// 	type: "post",
+	// 	dataType: "json",
+	// 	success: function (data, status, xhr) {
+	// 		//console.log(data);
+	// 		if (data.status == 1) {
+	// 			getGraph(data.data);
 
-	$.ajax({
-		url: "./upload",
-		type: "post",
-		dataType: "json",
-		success: function (data, status, xhr) {
-			//console.log(data);
-			if (data.status == 1) {
-				getGraph(data.data);
-				
-				$('#articles')
-					.css('display', 'block');
-				
-				$('#analysis')
-					.css('display', 'block');
+	// 			$('#articles')
+	// 				.css('display', 'block');
 
-				$('#prediction')
-					.css('display', 'block');
+	// 			$('#analysis')
+	// 				.css('display', 'block');
 
-				$('#search_close').trigger('click');
+	// 			$('#prediction')
+	// 				.css('display', 'block');
 
-				$('#id_file').val("");
-			} else {
-				console.log("return status : %d", data.status);
-			}
-		},
-		error: function (xhr, status, error) {
-			console.log(error);
+	// 			$('#search_close').trigger('click');
+
+	// 			$('#id_file').val("");
+	// 		} else {
+	// 			console.log("return status : %d", data.status);
+	// 		}
+	// 	},
+	// 	error: function (xhr, status, error) {
+	// 		console.log(error);
+	// 	}
+	// });
+
+//});
+
+$('#upload').ajaxForm({
+	url: "./upload",
+	enctype: "multipart/form-data",
+	dataType: "json",
+	success: function (data, status, xhr) {
+		console.log('00');
+		if (data.status == 1) {
+			getGraph(data.data);
+
+			$('#articles')
+				.css('display', 'block');
+
+			$('#analysis')
+				.css('display', 'block');
+
+			$('#prediction')
+				.css('display', 'block');
+
+			$('#search_close').trigger('click');
+
+			$('#id_file').val("");
+		} else {
+			console.log("return status : %d", data.status);
 		}
-	});
-
+	},
+	error: function (xhr, status, error) {
+		console.log('01');
+		console.log(error);
+	}
 });
 
 function getGraph(row_data) {

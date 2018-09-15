@@ -21,9 +21,12 @@ def upload(reqeust):
     return_json = {
         'status': 0
     }
+    logger.info('000')
     if reqeust.method == 'POST':
         logger.info(reqeust.FILES)
+        logger.info('001')
         if 'file' in reqeust.FILES:
+            logger.info('002')
             file = reqeust.FILES['file']
             filename = file._name
             logger.info(filename)
@@ -48,6 +51,7 @@ def upload(reqeust):
             return_json['status'] = 1
 
     ### 개발 테스트용 코드 ###
+    logger.info('003')
     json_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
     json_filename = 'sample.json'
     with open('%s\\%s' % (json_root, json_filename)) as json_file:
