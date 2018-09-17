@@ -40,7 +40,7 @@ $('#upload').ajaxForm({
 		console.log('00');
 		if (data.status == 1) {
 			getGraph(data.data);
-
+			
 			$('#articles')
 				.css('display', 'block');
 
@@ -63,7 +63,7 @@ $('#upload').ajaxForm({
 	}
 });
 
-function getGraph(row_data) {
+function getGraph(row_data) {  //, CompanyName, [col1, col2, col3]) {
 
 	let data = row_data;
 
@@ -78,10 +78,15 @@ function getGraph(row_data) {
 
 	data = data.map(parsing);
 
-	let svg = d3.select("svg");
-	let margin = { top: 20, right: 20, bottom: 20, left: 90 };  // left: 40
-	let width = +svg.attr("width") - margin.left - margin.right;
-	let height = +svg.attr("height") - margin.top - margin.bottom;
+	let top = 20;
+	let right = 20;
+	let bottom = 20;
+	let left = 90;
+
+	let svg = d3.select('svg');
+	let margin = { 'top': top, 'right': right, 'bottom': bottom, 'left': left };  // left: 40
+	let width = +svg.attr('width') - left - right;
+	let height = +svg.attr('height') - top - bottom;
 
 	let chart = svg
 		.append('g')

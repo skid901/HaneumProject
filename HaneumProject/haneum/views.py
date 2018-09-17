@@ -7,6 +7,7 @@ import os
 import shutil
 import json
 
+
 # Create your views here.
 
 logger = logging.getLogger(__name__)
@@ -44,9 +45,11 @@ def upload(reqeust):
             os.mkdir(upload_root)
             return_json['status'] = 1
             '''
-
+            
             # 업로드 파일로 작업 수행
             file.read()
+            corpName = file.corpName
+            news_json = getNews(corpName)
 
             return_json['status'] = 1
 
@@ -57,6 +60,7 @@ def upload(reqeust):
     with open('%s\\%s' % (json_root, json_filename)) as json_file:
         return_json["data"] = json.load(json_file)
     return_json['status'] = 1
+    return_json['news'] = news_json
     #########################
 
     return_jsonString = json.dumps(return_json)
