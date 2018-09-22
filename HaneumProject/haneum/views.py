@@ -47,9 +47,9 @@ def upload(reqeust):
             '''
             
             # 업로드 파일로 작업 수행
-            file.read()
-            corpName = file.corpName
-            news_json = getNews(corpName)
+            # file.read()
+            # corpName = file.corpName
+            # news_json = getNews(corpName)
 
             return_json['status'] = 1
 
@@ -60,7 +60,7 @@ def upload(reqeust):
     with open('%s\\%s' % (json_root, json_filename)) as json_file:
         return_json["data"] = json.load(json_file)
     return_json['status'] = 1
-    return_json['news'] = news_json
+    # return_json['news'] = news_json
     #########################
 
     return_jsonString = json.dumps(return_json)
@@ -73,7 +73,8 @@ def download(request):
     with open('%s\\%s' % (download_root, filename), 'rb') as download_file:
         response = HttpResponse(
             download_file, content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % (
-            filename)
+        response['Content-Disposition'] = 'attachment; filename="%s"' % (filename)
         return response
     raise Http404
+
+

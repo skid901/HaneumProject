@@ -1,44 +1,11 @@
-//$("#upload").on('submit', function (event) {
-
-	// $.ajax({
-	// 	url: "./upload",
-	// 	type: "post",
-	// 	dataType: "json",
-	// 	success: function (data, status, xhr) {
-	// 		//console.log(data);
-	// 		if (data.status == 1) {
-	// 			getGraph(data.data);
-
-	// 			$('#articles')
-	// 				.css('display', 'block');
-
-	// 			$('#analysis')
-	// 				.css('display', 'block');
-
-	// 			$('#prediction')
-	// 				.css('display', 'block');
-
-	// 			$('#search_close').trigger('click');
-
-	// 			$('#id_file').val("");
-	// 		} else {
-	// 			console.log("return status : %d", data.status);
-	// 		}
-	// 	},
-	// 	error: function (xhr, status, error) {
-	// 		console.log(error);
-	// 	}
-	// });
-
-//});
-
 $('#upload').ajaxForm({
 	url: "./upload",
 	enctype: "multipart/form-data",
 	dataType: "json",
 	success: function (data, status, xhr) {
-		console.log('00');
 		if (data.status == 1) {
+			$('#graph').empty();
+			
 			getGraph(data.data);
 			
 			$('#articles')
@@ -58,8 +25,7 @@ $('#upload').ajaxForm({
 		}
 	},
 	error: function (xhr, status, error) {
-		console.log('01');
-		console.log(error);
+		console.log('error', error);
 	}
 });
 
@@ -173,7 +139,10 @@ function getGraph(row_data) {  //, CompanyName, [col1, col2, col3]) {
 		.append('div')
 		.attr('class', 'tooltip')
 		.style('opacity', 0)
-		.style('display', 'none');
+		.style('display', 'none')
+		.style('width', '170px')
+		.style('height', '35px');
+
 
 	let formatTime = d3.timeFormat('%Y');
 
@@ -185,9 +154,23 @@ function getGraph(row_data) {  //, CompanyName, [col1, col2, col3]) {
 				.duration(200)
 				.style('opacity', 0.9)
 				.style('display', 'block');
+			// div
+			// 	.html('년도 : ' + formatTime(d.Year) + '<br/>' +
+			// 		'부채총계 : ' + '￦' + Number(d.TotalLiabilities).toLocaleString('en'))
+			// 	.style('left', (d3.event.pageX + 5) + 'px')
+			// 	.style('top', (d3.event.pageY - 35) + 'px');
+
 			div
-				.html('년도 : ' + formatTime(d.Year) + '<br/>' +
-					'부채총계 : ' + '￦' + Number(d.TotalLiabilities).toLocaleString('en'))
+				.html(`<table>
+							<tr>
+								<td style="text-align: right;">연&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp도&nbsp;:</td>
+								<td style="text-align: left;">&nbsp;${formatTime(d.Year)}</td>
+							</tr>
+							<tr>
+								<td style="text-align: right;">부채총계&nbsp;:</td>
+								<td>&nbsp;￦&nbsp;${Number(d.TotalLiabilities).toLocaleString('en')}</td>
+							</tr>
+						</table>`)
 				.style('left', (d3.event.pageX + 5) + 'px')
 				.style('top', (d3.event.pageY - 35) + 'px');
 		})
@@ -207,8 +190,16 @@ function getGraph(row_data) {  //, CompanyName, [col1, col2, col3]) {
 				.style('opacity', 0.9)
 				.style('display', 'block');
 			div
-				.html('년도 : ' + formatTime(d.Year) + '<br/>' +
-					'자본총계 : ' + '￦' + Number(d.TotalCapital).toLocaleString('en'))
+				.html(`<table>
+				<tr>
+					<td style="text-align: right;">연&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp도&nbsp;:</td>
+					<td style="text-align: left;">&nbsp;${formatTime(d.Year)}</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">자본총계&nbsp;:</td>
+						<td>&nbsp;￦&nbsp;${Number(d.TotalCapital).toLocaleString('en')}</td>
+						</tr>
+					</table>`)
 				.style('left', (d3.event.pageX + 5) + 'px')
 				.style('top', (d3.event.pageY - 35) + 'px');
 		})

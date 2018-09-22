@@ -47,7 +47,7 @@
 	<div class="container" id="analysis" style="display: none;">
 		<hr>
 		<p class="text-center">
-			<svg width="960" height="500"></svg>
+			<svg id="graph" width="960" height="500"></svg>
 		</p>
 	</div>
 	<div class="container" id="prediction" style="display: none;">
@@ -102,13 +102,14 @@
 						<form id="upload" action="./upload" method="post" enctype="multipart/form-data">
 							{% csrf_token %}
 							<div class="row">
-								<div class="col-md-offset-1 col-sm-2">
-									<a id="download" class="btn btn-primary" role="button" href="#">양식 다운로드</a>
-								</div>
-								<div class="col-md-offset-1 col-sm-3">
-									<p><input type="file" name="file" id="id_file" /></p>
-								</div>
-								<div class="col-md-offset-1 col-sm-3">
+								<center class="form-group">
+									<input class="btn btn-default" type="file" name="file" id="id_file" />
+								</center>
+							</div>
+							<div class="row">
+								<div class="form-group" style="text-align: center;">
+									<a id="download" class="btn btn-primary" role="button" href="./download">양식 다운로드</a>
+									&nbsp;&nbsp;&nbsp;
 									<input class="btn btn-primary" type="submit" value="파일 업로드" />
 								</div>
 							</div>
