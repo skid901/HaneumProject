@@ -84,9 +84,11 @@ def upload(reqeust):
             # news_json = getNews(corpName)
 
             # 업로드 파일 삭제
+            '''
             shutil.rmtree(upload_root)
             os.mkdir(upload_root)
             return_json['status'] = 1
+            '''
 
     '''
     ### 개발 테스트용 코드 ###
