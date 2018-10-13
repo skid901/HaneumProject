@@ -1,37 +1,56 @@
+var column_translation = {
+    'CompanyName': '회사명',
+    'Year': '년도',
+    'Sales': '매출액',
+    'OperatingProfit': '영업이익',
+    'NetIncome': '당기순이익',
+    'OperatingActivitiesCashFlow': '영업활동으로인한현금흐름',
+    'InvestmentActivitiesCashFlow': '투자활동으로인한현금흐름',
+    'FinancialActivitiesCashFlow': '재무활동으로인한현금흐름',
+    'AccountsReceivable': '매출채권',
+    'AccountsReceivableTurnover': '매출채권회전율',
+    'AccountsReceivableTurnoverDays': '매출채권회전일수',
+    'CostofGoodsSold': '매출원가',
+    'Inventory': '재고자산',
+    'InventoryTurnover': '재고자산회전율',
+    'InventoryTurnoverDays': '재고자산회전일수',
+    'InventoryTotalAssets': '자산총계',
+    'TotalBorrowings': '총차입금',
+    'FinancialCosts': '금융비용(손익)',
+    'TotalLiabilities': '부채총계',
+    'TotalCapital': '자본총계',
+    'DebtRatio': '부채비율',
+    'Bankruptcy': '부도여부'
+};
+
+var totalData;
+
 $('#upload').ajaxForm({
 	url: "./upload",
 	enctype: "multipart/form-data",
 	dataType: "json",
 	success: function (result, status, xhr) {
 		if (result.status == 1) {
-			$('#graph').empty();
-			
-			let graphData = result.data;
-			console.log('graphData', graphData);
+			totalData = result.data;
+			var parseDate = d3.timeParse("%Y");
 
-			let parseDate = d3.timeParse("%y");
-			console.log('parseDate', parseDate)
-		
-			graphData = graphData.map(function(d) {
+			totalData = totalData.map(function(d) {
 				d.Year = parseDate(d.Year);
 				return d;
 			});
 
-			console.log('check');
-
-			getGraph(graphData);
+			$('#graph').empty();
+			getGraph(totalData, [
+				'TotalLiabilities', 'TotalCapital'
+			]);
 			
 			$('#articles')
 				.css('display', 'block');
-
 			$('#analysis')
 				.css('display', 'block');
-
 			$('#prediction')
 				.css('display', 'block');
-
 			$('#search_close').trigger('click');
-
 			$('#id_file').val("");
 		} else {
 			console.log("return status : %d", result.status);
@@ -43,11 +62,35 @@ $('#upload').ajaxForm({
 	}
 });
 
-function getGraph(row_data) {  //, CompanyName, [col1, col2, col3]) {
+$('#test_btn1').on('click', function() {
+	$('#graph').empty();
+	getGraph(totalData, [
+		'TotalLiabilities', 
+		'TotalCapital'
+	]);
+});
+
+$('#test_btn2').on('click', function() {
+	$('#graph').empty();
+	getGraph(totalData, [
+		'OperatingActivitiesCashFlow',
+    	'InvestmentActivitiesCashFlow',
+		'FinancialActivitiesCashFlow'
+	]);
+});
+
+$('#test_btn3').on('click', function() {
+	$('#graph').empty();
+	getGraph(totalData, [
+		'Sales',
+    	'OperatingProfit',
+    	'NetIncome'
+	]);
+});
+
+function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 
 	let data = row_data;
-
-	//data = data.filter(d => d.CompanyName == '3S');
 
 	let top = 20;
 	let right = 20;
@@ -68,16 +111,23 @@ function getGraph(row_data) {  //, CompanyName, [col1, col2, col3]) {
 		.domain(d3.extent(data, d => d.Year))
 		.range([0, width]);
 
-	let totalLiabilities = d3.max(data, d => d.TotalLiabilities);
-	let totalCapital = d3.max(data, d => d.TotalCapital);
-	let yMax = totalLiabilities;
-	if (yMax < totalCapital) {
-		yMax = totalCapital
-	};
+	let yMax = 0;
+	let yMin = 0;
+
+	col_list.map(function(col_name) {
+		let colMax = d3.max(data, d => d[col_name]);
+		if (yMax < colMax) {
+			yMax = colMax;
+		}
+		let colMin = d3.min(data, d => d[col_name]);
+		if (yMin > colMin) {
+			yMin = colMin;
+		}
+	});
 
 	let y = d3
 		.scaleLinear()
-		.domain([0, yMax])
+		.domain([yMin, yMax])
 		.range([height, 0]);
 
 	let xAxis = d3.axisBottom(x);
@@ -92,53 +142,6 @@ function getGraph(row_data) {  //, CompanyName, [col1, col2, col3]) {
 		.append('g')
 		.call(yAxis);
 
-	let totalLiabilitiesLine = d3.line()
-		.x(d => x(d.Year))
-		.y(d => y(d.TotalLiabilities));
-
-	let totalCapitalLine = d3.line()
-		.x(d => x(d.Year))
-		.y(d => y(d.TotalCapital));
-	// .curve(d3.curveMonotoneX);
-
-	chart
-		.append('path')
-		.datum(data)  // [data]
-		.attr('fill', 'none')
-		.attr('stroke', 'darkred')
-		.attr('stroke-width', 2)
-		.attr('d', totalLiabilitiesLine);
-
-	chart
-		.append('path')
-		.datum(data)
-		.attr('fill', 'none')
-		.attr('stroke', 'steelblue')
-		.attr('stroke-width', 2)
-		.attr('d', totalCapitalLine);
-
-	chart
-		.selectAll('dot')
-		.data(data)
-		.enter()
-		.append('circle')
-		.attr('r', 3)
-		.attr('cx', d => x(d.Year))
-		.attr('cy', d => y(d.TotalLiabilities))
-		.attr('class', 'totalLiabilitiesdots')
-		.style('fill', 'darkred');
-
-	chart
-		.selectAll('dot')
-		.data(data)
-		.enter()
-		.append('circle')
-		.attr('r', 3)
-		.attr('cx', d => x(d.Year))
-		.attr('cy', d => y(d.TotalCapital))
-		.attr('class', 'totalCapitaldots')
-		.style('fill', 'steelblue');
-
 	let div = d3
 		.select('body')
 		.append('div')
@@ -148,71 +151,66 @@ function getGraph(row_data) {  //, CompanyName, [col1, col2, col3]) {
 		.style('width', '170px')
 		.style('height', '35px');
 
-
 	let formatTime = d3.timeFormat('%Y');
 
-	chart
-		.selectAll('.totalLiabilitiesdots')
-		.on('mouseover', d => {
-			div
-				.transition()
-				.duration(200)
-				.style('opacity', 0.9)
-				.style('display', 'block');
-			// div
-			// 	.html('년도 : ' + formatTime(d.Year) + '<br/>' +
-			// 		'부채총계 : ' + '￦' + Number(d.TotalLiabilities).toLocaleString('en'))
-			// 	.style('left', (d3.event.pageX + 5) + 'px')
-			// 	.style('top', (d3.event.pageY - 35) + 'px');
+	col_list.map(function(col_name, idx) {
+		let col_line = d3.line()
+			.x(d => x(d.Year))
+			.y(d => y(d[col_name]));
 
-			div
-				.html(`<table>
-							<tr>
-								<td style="text-align: right;">연&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp도&nbsp;:</td>
-								<td style="text-align: left;">&nbsp;${formatTime(d.Year)}</td>
-							</tr>
-							<tr>
-								<td style="text-align: right;">부채총계&nbsp;:</td>
-								<td>&nbsp;￦&nbsp;${Number(d.TotalLiabilities).toLocaleString('en')}</td>
-							</tr>
-						</table>`)
-				.style('left', (d3.event.pageX + 5) + 'px')
-				.style('top', (d3.event.pageY - 35) + 'px');
-		})
-		.on('mouseout', d => {
-			div
-				.transition()
-				.duration(500)
-				.style("opacity", 0);
-		});
+		let color = ['darkred', 'steelblue', 'DarkGreen', 'OrangeRed',
+			'DarkOrchid', 'DeepPink', 'GoldenRod', 'Indigo',
+		];
 
-	chart
-		.selectAll('.totalCapitaldots')
-		.on('mouseover', d => {
-			div
-				.transition()
-				.duration(200)
-				.style('opacity', 0.9)
-				.style('display', 'block');
-			div
-				.html(`<table>
-				<tr>
-					<td style="text-align: right;">연&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp도&nbsp;:</td>
-					<td style="text-align: left;">&nbsp;${formatTime(d.Year)}</td>
-					</tr>
-					<tr>
-						<td style="text-align: right;">자본총계&nbsp;:</td>
-						<td>&nbsp;￦&nbsp;${Number(d.TotalCapital).toLocaleString('en')}</td>
-						</tr>
-					</table>`)
-				.style('left', (d3.event.pageX + 5) + 'px')
-				.style('top', (d3.event.pageY - 35) + 'px');
-		})
-		.on('mouseout', d => {
-			div
-				.transition()
-				.duration(500)
-				.style("opacity", 0);
-		});
+		chart
+			.append('path')
+			.datum(data)  // [data]
+			.attr('fill', 'none')
+			.attr('stroke', color[idx])
+			.attr('stroke-width', 2)
+			.attr('d', col_line);
+
+		chart
+			.selectAll('dot')
+			.data(data)
+			.enter()
+			.append('circle')
+			.attr('r', 3)
+			.attr('cx', d => x(d.Year))
+			.attr('cy', d => y(d[col_name]))
+			.attr('class', col_name + 'Dots')
+			.style('fill', color[idx]);
+		
+		chart
+			.selectAll(`.${col_name}Dots`)
+			.on('mouseover', d => {
+				div
+					.transition()
+					.duration(200)
+					.style('opacity', 0.9)
+					.style('display', 'block');
+	
+				div
+					.html(`<table>
+								<tr>
+									<td style="text-align: right;">연&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp도&nbsp;:</td>
+									<td style="text-align: left;">&nbsp;${formatTime(d.Year)}</td>
+								</tr>
+								<tr>
+									<td style="text-align: right;">${column_translation[col_name]}&nbsp;:</td>
+									<td>&nbsp;￦&nbsp;${Number(d[col_name]).toLocaleString('en')}</td>
+								</tr>
+							</table>`)
+					.style('left', (d3.event.pageX + 5) + 'px')
+					.style('top', (d3.event.pageY - 35) + 'px');
+			})
+			.on('mouseout', d => {
+				div
+					.transition()
+					.duration(500)
+					.style("opacity", 0);
+			});
+		
+	});
 
 }

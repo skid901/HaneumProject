@@ -72,29 +72,38 @@ def upload(reqeust):
             # dataframe 컬럼 명 치환
             df.rename(columns=column_translation, inplace=True)
             # 데이터를 json 객체로 변환
-            df_json = df.to_json( orient='records')
+            df_jsonString = df.to_json( orient='records')
+            df_json = json.loads(df_jsonString)
             logger.info('003')
             logger.info(df_json)
             # 반환 json 객체에 데이터 할당
             return_json["data"] = df_json
 
             # 업로드 파일로 작업 수행
-            # file.read()
-            # corpName = file.corpName
+            logger.info('004')
+            #corpName = df_json[0]['CompanyName']
+            year = df_json[0]['Year']
+            capital = df_json[0]['TotalCapital']
+            #logger.info(corpName)
+            logger.info(year)
+            logger.info(type(year))
+            logger.info(capital)
+            logger.info(type(capital))
             # news_json = getNews(corpName)
 
             # 업로드 파일 삭제
             '''
             shutil.rmtree(upload_root)
             os.mkdir(upload_root)
-            return_json['status'] = 1
             '''
 
+            return_json['status'] = 1
+
     '''
-    ### 개발 테스트용 코드 ###
+    ### 개발 테스트용 코드(샘플데이터 사용) ###
     logger.info('004')
     json_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
-    json_filename = 'sample.json'
+    json_filename = 'sample2.json'
     with open('%s\\%s' % (json_root, json_filename)) as json_file:
         return_json["data"] = json.load(json_file)
     return_json['status'] = 1
@@ -103,6 +112,8 @@ def upload(reqeust):
     '''
 
     return_jsonString = json.dumps(return_json)
+    logger.info('005')
+    logger.info(return_jsonString)
     return HttpResponse(return_jsonString)
 
 
