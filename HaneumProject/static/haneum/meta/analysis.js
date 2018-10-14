@@ -13,7 +13,7 @@ let column_translation = {
 	'Sales': '매출액',
 	'CostofGoodsSold': '매출원가',
 	'OperatingProfit': '영업이익',
-	'FinancialCosts': '금융비용(손익)',
+	'FinancialCosts': '금융비용',
 	'NetIncome': '당기순이익',
 
 	'OperatingActivitiesCashFlow': '영업활동으로인한현금흐름',
@@ -51,10 +51,6 @@ let totalData;
 let predictData;
 let checked_col_btn_list = [];
 
-let color = ['darkred', 'steelblue', 'DarkGreen', 'OrangeRed',
-			'DarkOrchid', 'DeepPink', 'GoldenRod', 'Indigo',
-];
-
 $('#upload').ajaxForm({
 	url: "./upload",
 	enctype: "multipart/form-data",
@@ -77,22 +73,6 @@ $('#upload').ajaxForm({
 <p class=\"list-group-item-text\">${el.description}</p>
 </a>`);
 			});
-// 			for (let i=0; i < Object.keys(data).length; i++) {
-//                 let line = "";
-//                 let link = "";
-//                 let description = "";
-                
-//                 line += data[i].title + " ";
-//                 link += data[i].originallink + " ";
-//                 description += data[i].description + " ";
-
-//                 html += `<a href='${link}' class=\"list-group-item\" target=\"_blank\">
-// <h4 class=\"list-group-item-heading\"><b>${line}</b></h4>
-// <p class=\"list-group-item-text\">${description}</p>
-// </a>`;
-
-// 				$('#article_list').empty();
-// 				$('#article_list').append(html);
 
 			// 분석 데이터 그래프
 			let parseDate = d3.timeParse("%Y");
@@ -130,12 +110,14 @@ $('.col_btn').on('click', function(event) {
 		let col_name = $(input).val();
 		checked_col_btn_list.push(col_name);
 		$(input).prop('checked', true);
+		$(col_btn).css('background-color', column_color[col_name]);
 	} else {
 		let col_name = $(input).val();
 		checked_col_btn_list = checked_col_btn_list.filter(function(el){
 			return el !== col_name
 		});
 		$(input).prop('checked', false);
+		$(col_btn).css('background-color', 'white');
 	}
 	$('#graph').empty();
 	getGraph(totalData, checked_col_btn_list);
@@ -153,7 +135,7 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 	let top = 20;
 	let right = 20;
 	let bottom = 20;
-	let left = 50;  // left: 40
+	let left = 170;  // left: 40
 
 	let margin = { 'top': top, 'right': right, 'bottom': bottom, 'left': left };
 	let width = + svg.attr('width') - left - right;

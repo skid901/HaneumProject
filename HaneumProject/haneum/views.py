@@ -31,28 +31,32 @@ news = News.News()
 predict = Predict.Predict()
 
 column_translation = {
-    '회사명' : 'CompanyName',
-    '년도' : 'Year',
-    '매출액' : 'Sales',
-    '영업이익' : 'OperatingProfit',
-    '당기순이익' : 'NetIncome',
-    '영업활동으로인한현금흐름' : 'OperatingActivitiesCashFlow',
-    '투자활동으로인한현금흐름' : 'InvestmentActivitiesCashFlow',
-    '재무활동으로인한현금흐름' : 'FinancialActivitiesCashFlow',
-    '매출채권' : 'AccountsReceivable',
-    '매출채권회전율(매출액/(sum매출채권/count매출채권))' : 'AccountsReceivableTurnover',
-    '매출채권회전일수(365/매출채권회전율)' : 'AccountsReceivableTurnoverDays',
-    '매출원가' : 'CostofGoodsSold',
-    '재고자산' : 'Inventory',
-    '재고자산회전율(매출원가/(sum재고자산/count재고자산))' : 'InventoryTurnover',
-    '재고자산회전일수(365/재고자산회전율)' : 'InventoryTurnoverDays',
-    '자산총계' : 'InventoryTotalAssets',
-    '총차입금' : 'TotalBorrowings',
-    '금융비용(손익)' : 'FinancialCosts',
-    '부채총계' : 'TotalLiabilities',
-    '자본총계' : 'TotalCapital',
-    '부채비율(부채총계/자본총계)' : 'DebtRatio',
-    '부도여부' : 'Bankruptcy'
+    '회사명': 'CompanyName',
+	'년도': 'Year',
+	'부도여부': 'Bankruptcy',
+
+	'재고자산': 'Inventory',
+	'매출채권': 'AccountsReceivable',
+	'자산총계': 'InventoryTotalAssets',
+	'총차입금': 'TotalBorrowings',
+	'부채총계': 'TotalLiabilities',
+	'자본총계': 'TotalCapital',
+
+	'매출액': 'Sales',
+	'매출원가': 'CostofGoodsSold',
+	'영업이익': 'OperatingProfit',
+	'금융비용': 'FinancialCosts',
+	'당기순이익': 'NetIncome',
+
+	'영업활동으로인한현금흐름': 'OperatingActivitiesCashFlow',
+    '투자활동으로인한현금흐름': 'InvestmentActivitiesCashFlow',
+    '재무활동으로인한현금흐름': 'FinancialActivitiesCashFlow',
+    
+    '매출채권회전율': 'AccountsReceivableTurnover',
+    '매출채권회전일수': 'AccountsReceivableTurnoverDays',
+    '재고자산회전율': 'InventoryTurnover',
+    '재고자산회전일수': 'InventoryTurnoverDays',
+	'부채비율': 'DebtRatio'    
 }
 
 def index(request):
@@ -84,7 +88,7 @@ def upload(reqeust):
             # 저장된 파일로 부터 dataframe 추출
             df = pd.read_excel('%s\\%s' % (upload_root, filename))
             # dataframe 컬럼 명 치환
-            #df.rename(columns=column_translation, inplace=True)
+            df.rename(columns=column_translation, inplace=True)
             # 데이터를 json 객체로 변환
             df_jsonString = df.to_json( orient='records')
             df_json = json.loads(df_jsonString)
@@ -117,7 +121,7 @@ def upload(reqeust):
             x_year = np.array(df['Year'][-1*predict_data.shape[0]:]).reshape(predict_data.shape[0],1)
             
             saved_model_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
-            saved_model_name = 'finalized_model.sav'
+            saved_model_name = 'model.sav'  # 'finalized_model.sav'
 
             loaded_model = pickle.load(open('%s\\%s' % (saved_model_root, saved_model_name), 'rb'))
             Y_predict = loaded_model.predict_proba(X_predict)

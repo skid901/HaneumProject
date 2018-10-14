@@ -18,7 +18,7 @@
 				 aria-expanded="false">
 					<span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="./">부채 예측</a>
+				<a class="navbar-brand" href="./">부측이</a>
 			</div>
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
@@ -51,74 +51,122 @@
 	<div class="container" id="analysis" style="display: none;">
 		<hr>
 		<div class="row">
-			<div class="col-sm-2">
-				재무상태표 계정:&nbsp;
-				<span class="btn btn-default col_btn">
-					<input type="checkbox" value="Inventory" disabled>
-					&nbsp;재고자산
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="AccountsReceivable" disabled>
-						&nbsp;매출채권
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="InventoryTotalAssets" disabled>
-						&nbsp;자산총계
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="TotalBorrowings" disabled>
-						&nbsp;총차입금
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="TotalLiabilities" disabled>
-						&nbsp;부채총계
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="TotalCapital" disabled>
-						&nbsp;자본총계
-				</span>
+			<div class="col-sm-3">
+				<table class="table-borderless">
+					<thead>
+						<tr>
+							<th><h4>재무상태표</h4></th>
+							<th><h4>손익계산서</h4></th>
+							<th><h4>현금흐름표</h4></th>
+						</tr>
+					</thead>
+					<tr>
+						<td>
+							<span class="btn btn-default col_btn" id="Inventory_btn">
+								<input type="checkbox" value="Inventory" disabled>
+								&nbsp;재고자산
+							</span>
+						</td>
+						<td>
+							<span class="btn btn-default col_btn" id="Sales_btn">
+								<input type="checkbox" value="Sales" disabled>
+								&nbsp;매출액
+							</span>
+						</td>
+						<td rowspan="2">
+							<span class="btn btn-default col_btn" id="OperatingActivitiesCashFlow_btn">
+								<input type="checkbox" value="OperatingActivitiesCashFlow" disabled>
+								&nbsp;영업활동으로<br>인한&nbsp;현금흐름
+							</span>&nbsp;
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span class="btn btn-default col_btn" id="AccountsReceivable_btn">
+								<input type="checkbox" value="AccountsReceivable" disabled>
+								&nbsp;매출채권
+							</span>
+						</td>
+						<td>
+							<span class="btn btn-default col_btn" id="CostofGoodsSold_btn">
+								<input type="checkbox" value="CostofGoodsSold" disabled>
+								&nbsp;매출원가
+							</span>
+						</td>
+						<td>
+				
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span class="btn btn-default col_btn" id="InventoryTotalAssets_btn">
+								<input type="checkbox" value="InventoryTotalAssets" disabled>
+								&nbsp;자산총계
+							</span>
+						</td>
+						<td>
+							<span class="btn btn-default col_btn" id="OperatingProfit_btn">
+								<input type="checkbox" value="OperatingProfit" disabled>
+								&nbsp;영업이익
+							</span>
+						</td>
+						<td rowspan="2">
+							<span class="btn btn-default col_btn" id="InvestmentActivitiesCashFlow_btn">
+								<input type="checkbox" value="InvestmentActivitiesCashFlow" disabled>
+								&nbsp;투자활동으로<br>인한&nbsp;현금흐름
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span class="btn btn-default col_btn" id="TotalBorrowings_btn">
+								<input type="checkbox" value="TotalBorrowings" disabled>
+								&nbsp;총차입금
+							</span>
+						</td>
+						<td>
+							<span class="btn btn-default col_btn" id="FinancialCosts_btn">
+								<input type="checkbox" value="FinancialCosts" disabled>
+								&nbsp;금융비용
+							</span>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>
+							<span class="btn btn-default col_btn" id="TotalLiabilities_btn">
+								<input type="checkbox" value="TotalLiabilities" disabled>
+								&nbsp;부채총계
+							</span>
+						</td>
+						<td>
+							<span class="btn btn-default col_btn" id="NetIncome_btn">
+								<input type="checkbox" value="NetIncome" disabled>
+								&nbsp;당기순이익
+							</span>
+						</td>
+						<td rowspan="2">
+							<span class="btn btn-default col_btn" id="FinancialActivitiesCashFlow_btn">
+								<input type="checkbox" value="FinancialActivitiesCashFlow" disabled>
+								&nbsp;재무활동으로<br>인한&nbsp;현금흐름
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span class="btn btn-default col_btn" id="TotalCapital_btn">
+								<input type="checkbox" value="TotalCapital" disabled>
+								&nbsp;자본총계
+							</span>
+						</td>
+						<td></td>
+						<td></td>
+					</tr>
+				</table>
 			</div>
-			<div class="col-sm-2">
-				손익계산서 계정:&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="Sales" disabled>
-						&nbsp;매출액
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="CostofGoodsSold" disabled>
-						&nbsp;매출원가
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="OperatingProfit" disabled>
-						&nbsp;영업이익
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="FinancialCosts" disabled>
-						&nbsp;금융비용
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="NetIncome" disabled>
-						&nbsp;당기순이익
-				</span>
-			</div>
-			<div class="col-sm-2">
-				현금흐름표 계정:&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="OperatingActivitiesCashFlow" disabled>
-						&nbsp;영업활동으로<br>인한&nbsp;현금흐름
-				</span>&nbsp;
-				<span class="btn btn-default col_btn">
-						<input type="checkbox" value="InvestmentActivitiesCashFlow" disabled>
-						&nbsp;투자활동으로<br>인한&nbsp;현금흐름
-				</span>&nbsp;
-				<span class="btn btn-default col_btn" style="background-color: red">
-						<input type="checkbox" value="FinancialActivitiesCashFlow" disabled>
-						&nbsp;재무활동으로<br>인한&nbsp;현금흐름
-				</span>&nbsp;
-			</div>
-			<div  class="col-sm-6 text-center">
+			<div  class="col-sm-9">
 				<!-- <svg id="graph" width="960" height="500"></svg> -->
-				<svg id="graph" width="700" height="500"></svg>
+				<svg id="graph" width="800" height="500"></svg>
 			</div>
 		</div>
 	</div>
@@ -134,11 +182,21 @@
 					<h5>한이음 프로젝트</h5>
 				</div>
 				<div class="col-sm-4" style="text-align: center;">
-					<h5>프로젝트 소개</h5>
-					<p>프로젝트 설명입니다.</p>
+					<h5>Project Intro</h5>
+					<p>
+						기업 부실을 예측하는 '부측이' 웹 서비스입니다.
+						<br>
+						부측이는 은행에서 기업 대출을 위한
+						<br>
+						심사 및 관리에 이용될 수 있으며,
+						<br>
+						투자자, 기업고객이 적정한 투자 기업을 선정할 시
+						<br>
+						참고할 수 있는 지표가 됩니다.
+					</p>
 				</div>
 				<div class="col-sm-2">
-					<h4 style="text-align: center;">내비게이션</h4>
+					<h4 style="text-align: center;">Navigator</h4>
 					<div class="list-group">
 						<a href="#search" class="list-group-item">검색</a> 
 						<a href="#articles" class="list-group-item">기사</a> 
@@ -147,12 +205,12 @@
 					</div>
 				</div>
 				<div class="col-sm-2">
-					<h4 style="text-align: center;">팀 소개</h4>
+					<h4 style="text-align: center;">Team</h4>
 					<div class="list-group">
-						<a href="#" class="list-group-item">팀원1</a>
-						<a href="#" class="list-group-item">팀원2</a> 
-						<a href="#" class="list-group-item">팀원3</a>
-						<a href="#" class="list-group-item">팀원4</a>
+						<a href="#" class="list-group-item">Leader 김현우</a>
+						<a href="#" class="list-group-item">Data 시경덕</a> 
+						<a href="#" class="list-group-item">Front-end 신연수</a>
+						<a href="#" class="list-group-item">Back-end 정수연</a>
 					</div>
 				</div>
 				<div class="col-sm-2">
