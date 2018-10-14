@@ -7,6 +7,16 @@ import os
 import shutil
 import json
 import pandas as pd
+
+# News
+from . import News
+
+# Predict
+from . import Predict
+import numpy as np
+import pickle
+
+
 pd.set_option('display.height', 1000)
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -15,6 +25,10 @@ pd.set_option('display.width', 1000)
 # Create your views here.
 
 logger = logging.getLogger(__name__)
+
+news = News.News()
+
+predict = Predict.Predict()
 
 column_translation = {
     '회사명' : 'CompanyName',
@@ -70,7 +84,7 @@ def upload(reqeust):
             # 저장된 파일로 부터 dataframe 추출
             df = pd.read_excel('%s\\%s' % (upload_root, filename))
             # dataframe 컬럼 명 치환
-            df.rename(columns=column_translation, inplace=True)
+            #df.rename(columns=column_translation, inplace=True)
             # 데이터를 json 객체로 변환
             df_jsonString = df.to_json( orient='records')
             df_json = json.loads(df_jsonString)
@@ -81,7 +95,7 @@ def upload(reqeust):
 
             # 업로드 파일로 작업 수행
             logger.info('004')
-            #corpName = df_json[0]['CompanyName']
+            corpName = df_json[0]['CompanyName']
             year = df_json[0]['Year']
             capital = df_json[0]['TotalCapital']
             #logger.info(corpName)
@@ -89,7 +103,31 @@ def upload(reqeust):
             logger.info(type(year))
             logger.info(capital)
             logger.info(type(capital))
-            # news_json = getNews(corpName)
+            
+            # 뉴스 데이터 획득
+            news_json = news.getNews(corpName)
+            logger.info('news')
+            logger.info(news_json['items'])
+            return_json['news'] = news_json['items']
+
+            # 예측 모델 수행
+            # df = pd.read_excel("덕유_테스트데이터.xlsx")
+            predict_data = predict.create_dataset(df, 3)
+            X_predict = predict_data.tolist()
+            x_year = np.array(df['Year'][-1*predict_data.shape[0]:]).reshape(predict_data.shape[0],1)
+            
+            saved_model_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
+            saved_model_name = 'finalized_model.sav'
+
+            loaded_model = pickle.load(open('%s\\%s' % (saved_model_root, saved_model_name), 'rb'))
+            Y_predict = loaded_model.predict_proba(X_predict)
+            predict_list = np.hstack([x_year, Y_predict]).tolist()
+            logger.info('predict_list')
+            logger.info(predict_list)
+            predict_json_list = []
+            for el in predict_list:
+                predict_json_list.append({'Year': el[0], 'NonBankruptcy': el[1], 'Bankruptcy': el[2]})
+            return_json['predict'] = predict_json_list
 
             # 업로드 파일 삭제
             '''

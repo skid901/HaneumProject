@@ -46,8 +46,9 @@ let column_color = {
     'FinancialActivitiesCashFlow': 'LightSalmon',
 };
 
+let news;
 let totalData;
-
+let predictData;
 let checked_col_btn_list = [];
 
 let color = ['darkred', 'steelblue', 'DarkGreen', 'OrangeRed',
@@ -60,7 +61,40 @@ $('#upload').ajaxForm({
 	dataType: "json",
 	success: function (result, status, xhr) {
 		if (result.status == 1) {
+			news = result.news;
 			totalData = result.data;
+			predictData = result.predict;
+			console.log('news', news);
+			console.log('totalData', totalData);
+			console.log('predictData', predictData)
+
+			// 뉴스 데이터
+			$('#article_list').empty();
+			$('#news_title').html(`<b>${totalData[0].CompanyName}</b> 검색결과:`);
+			news.map(function(el, idx){
+				$('#article_list').append(`<a href='${el.originallink}' class="list-group-item" target="_blank">
+<h4 class="list-group-item-heading"><b>${el.title}</b></h4>
+<p class=\"list-group-item-text\">${el.description}</p>
+</a>`);
+			});
+// 			for (let i=0; i < Object.keys(data).length; i++) {
+//                 let line = "";
+//                 let link = "";
+//                 let description = "";
+                
+//                 line += data[i].title + " ";
+//                 link += data[i].originallink + " ";
+//                 description += data[i].description + " ";
+
+//                 html += `<a href='${link}' class=\"list-group-item\" target=\"_blank\">
+// <h4 class=\"list-group-item-heading\"><b>${line}</b></h4>
+// <p class=\"list-group-item-text\">${description}</p>
+// </a>`;
+
+// 				$('#article_list').empty();
+// 				$('#article_list').append(html);
+
+			// 분석 데이터 그래프
 			let parseDate = d3.timeParse("%Y");
 			totalData = totalData.map(function(d) {
 				d.Year = parseDate(d.Year);
@@ -68,6 +102,8 @@ $('#upload').ajaxForm({
 			});
 			$('#graph').empty();
 			getGraph(totalData, checked_col_btn_list);
+
+
 			$('#articles')
 				.css('display', 'block');
 			$('#analysis')
@@ -103,9 +139,6 @@ $('.col_btn').on('click', function(event) {
 	}
 	$('#graph').empty();
 	getGraph(totalData, checked_col_btn_list);
-	if(checked_col_btn_list.length == 0) {
-		alert('선택된 계정이 없습니다.\n계정을 선택해주십시오.');
-	}
 });
 
 let svg = d3.select('svg');
@@ -114,13 +147,13 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 
 	let data = row_data;
 	
-	let svg = d3.select('svg')
-		.attr('width', window.innerWidth * 960 / 1280);
+	let svg = d3.select('svg');
+		// .attr('width', window.innerWidth * 500 / 1280);
 
 	let top = 20;
 	let right = 20;
 	let bottom = 20;
-	let left = 90;  // left: 40
+	let left = 50;  // left: 40
 
 	let margin = { 'top': top, 'right': right, 'bottom': bottom, 'left': left };
 	let width = + svg.attr('width') - left - right;
@@ -199,11 +232,12 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 	col_list.map(function(col_name, idx) {
 		let col_line = d3.line()
 			.x(d => x(d.Year))
-			.y(d => y(d[col_name]));
+			.y(d => y(d[col_name]))
+			.curve(d3.curveMonotoneX);
 
 		chart
 			.append('path')
-			.datum(data)  // [data]
+			.datum(data)
 			.attr('fill', 'none')
 			.attr('stroke', column_color[col_name])
 			.attr('stroke-width', 2)
