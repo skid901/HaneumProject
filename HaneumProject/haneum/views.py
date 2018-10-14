@@ -116,12 +116,14 @@ def upload(reqeust):
 
             # 예측 모델 수행
             # df = pd.read_excel("덕유_테스트데이터.xlsx")
+            financial_index = predict.financial_data()
+            df = predict.append_financial_Index(df, financial_index)
             predict_data = predict.create_dataset(df, 3)
             X_predict = predict_data.tolist()
             x_year = np.array(df['Year'][-1*predict_data.shape[0]:]).reshape(predict_data.shape[0],1)
             
             saved_model_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
-            saved_model_name = 'model.sav'  # 'finalized_model.sav'
+            saved_model_name = 'finalized_model_2.sav'  # 'model.sav'  # 'finalized_model.sav'
 
             loaded_model = pickle.load(open('%s\\%s' % (saved_model_root, saved_model_name), 'rb'))
             Y_predict = loaded_model.predict_proba(X_predict)
