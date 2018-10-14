@@ -50,48 +50,73 @@
 	</div>
 	<div class="container" id="analysis" style="display: none;">
 		<hr>
+		<h1 id="analysis_title"></h1>
 		<div class="row">
-			<div class="col-sm-3">
-				<table class="table-borderless">
+			
+			<div  class="col-sm-8">
+				<!-- <svg id="graph" width="960" height="500"></svg> -->
+				<svg id="graph" width="760" height="500"></svg>
+			</div>
+
+			<div class="col-sm-4">
+				<div style="text-align: center;">
+					<h3>지표 상세설명</h3>
+					<table class="table" width="140px" style="table-layout: fixed">
+						<tr>
+							<td width="30px"><b>계정</b></td>
+							<td id="detail_col" width="100px" style="table-layout: fixed"></td>
+						</tr>
+						<tr>
+							<td width="30px"><b>연도</b></td>
+							<td id="detail_year" width="100px" style="table-layout: fixed"></td>
+						</tr>
+						<tr>
+							<td width="30px"><b>금액</b></td>
+							<td id="detail_currency" width="100px" style="table-layout: fixed"></td>
+						</tr>
+					</table>
+				</div>
+
+				<table class="table-borderless" style="text-align: center;">
 					<thead>
 						<tr>
-							<th><h4>재무상태표</h4></th>
-							<th><h4>손익계산서</h4></th>
-							<th><h4>현금흐름표</h4></th>
+							<th style="text-align: center;"><h4>재무상태표</h4></th>
+							<th style="text-align: center;"><h4>손익계산서</h4></th>
+							<th style="text-align: center;"><h4>현금흐름표</h4></th>
 						</tr>
 					</thead>
 					<tr>
 						<td>
-							<span class="btn btn-default col_btn" id="Inventory_btn">
+							<div class="btn btn-default col_btn" id="Inventory_btn">
 								<input type="checkbox" value="Inventory" disabled>
 								&nbsp;재고자산
-							</span>
+							</div>
 						</td>
 						<td>
-							<span class="btn btn-default col_btn" id="Sales_btn">
+							<div class="btn btn-default col_btn" id="Sales_btn">
 								<input type="checkbox" value="Sales" disabled>
 								&nbsp;매출액
-							</span>
+							</div>
 						</td>
 						<td rowspan="2">
-							<span class="btn btn-default col_btn" id="OperatingActivitiesCashFlow_btn">
+							<div class="btn btn-default col_btn" id="OperatingActivitiesCashFlow_btn">
 								<input type="checkbox" value="OperatingActivitiesCashFlow" disabled>
 								&nbsp;영업활동으로<br>인한&nbsp;현금흐름
-							</span>&nbsp;
+							</div>&nbsp;
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<span class="btn btn-default col_btn" id="AccountsReceivable_btn">
+							<div class="btn btn-default col_btn" id="AccountsReceivable_btn">
 								<input type="checkbox" value="AccountsReceivable" disabled>
 								&nbsp;매출채권
-							</span>
+							</div>
 						</td>
 						<td>
-							<span class="btn btn-default col_btn" id="CostofGoodsSold_btn">
+							<div class="btn btn-default col_btn" id="CostofGoodsSold_btn">
 								<input type="checkbox" value="CostofGoodsSold" disabled>
 								&nbsp;매출원가
-							</span>
+							</div>
 						</td>
 						<td>
 				
@@ -99,79 +124,78 @@
 					</tr>
 					<tr>
 						<td>
-							<span class="btn btn-default col_btn" id="InventoryTotalAssets_btn">
+							<div class="btn btn-default col_btn" id="InventoryTotalAssets_btn">
 								<input type="checkbox" value="InventoryTotalAssets" disabled>
 								&nbsp;자산총계
-							</span>
+							</div>
 						</td>
 						<td>
-							<span class="btn btn-default col_btn" id="OperatingProfit_btn">
+							<div class="btn btn-default col_btn" id="OperatingProfit_btn">
 								<input type="checkbox" value="OperatingProfit" disabled>
 								&nbsp;영업이익
-							</span>
+							</div>
 						</td>
 						<td rowspan="2">
-							<span class="btn btn-default col_btn" id="InvestmentActivitiesCashFlow_btn">
+							<div class="btn btn-default col_btn" id="InvestmentActivitiesCashFlow_btn">
 								<input type="checkbox" value="InvestmentActivitiesCashFlow" disabled>
 								&nbsp;투자활동으로<br>인한&nbsp;현금흐름
-							</span>
+							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<span class="btn btn-default col_btn" id="TotalBorrowings_btn">
+							<div class="btn btn-default col_btn" id="TotalBorrowings_btn">
 								<input type="checkbox" value="TotalBorrowings" disabled>
 								&nbsp;총차입금
-							</span>
+							</div>
 						</td>
 						<td>
-							<span class="btn btn-default col_btn" id="FinancialCosts_btn">
+							<div class="btn btn-default col_btn" id="FinancialCosts_btn">
 								<input type="checkbox" value="FinancialCosts" disabled>
 								&nbsp;금융비용
-							</span>
+							</div>
 						</td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>
-							<span class="btn btn-default col_btn" id="TotalLiabilities_btn">
+							<div class="btn btn-default col_btn" id="TotalLiabilities_btn">
 								<input type="checkbox" value="TotalLiabilities" disabled>
 								&nbsp;부채총계
-							</span>
+							</div>
 						</td>
 						<td>
-							<span class="btn btn-default col_btn" id="NetIncome_btn">
+							<div class="btn btn-default col_btn" id="NetIncome_btn">
 								<input type="checkbox" value="NetIncome" disabled>
 								&nbsp;당기순이익
-							</span>
+							</div>
 						</td>
 						<td rowspan="2">
-							<span class="btn btn-default col_btn" id="FinancialActivitiesCashFlow_btn">
+							<div class="btn btn-default col_btn" id="FinancialActivitiesCashFlow_btn">
 								<input type="checkbox" value="FinancialActivitiesCashFlow" disabled>
 								&nbsp;재무활동으로<br>인한&nbsp;현금흐름
-							</span>
+							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<span class="btn btn-default col_btn" id="TotalCapital_btn">
+							<div class="btn btn-default col_btn" id="TotalCapital_btn">
 								<input type="checkbox" value="TotalCapital" disabled>
 								&nbsp;자본총계
-							</span>
+							</div>
 						</td>
 						<td></td>
 						<td></td>
 					</tr>
 				</table>
+					
 			</div>
-			<div  class="col-sm-9">
-				<!-- <svg id="graph" width="960" height="500"></svg> -->
-				<svg id="graph" width="800" height="500"></svg>
-			</div>
+
 		</div>
 	</div>
 	<div class="container" id="prediction" style="display: none;">
 		<hr>
+		<h1 id="prediction_title"></h1>
 	</div>
 	<footer style="background-color: #000000; color: #ffffff">
 		<div class="container">
@@ -197,7 +221,7 @@
 				</div>
 				<div class="col-sm-2">
 					<h4 style="text-align: center;">Navigator</h4>
-					<div class="list-group">
+					<div class="list-group" style="text-align: center;">
 						<a href="#search" class="list-group-item">검색</a> 
 						<a href="#articles" class="list-group-item">기사</a> 
 						<a href="#analysis" class="list-group-item">분석</a> 
@@ -206,7 +230,7 @@
 				</div>
 				<div class="col-sm-2">
 					<h4 style="text-align: center;">Team</h4>
-					<div class="list-group">
+					<div class="list-group" style="text-align: center;">
 						<a href="#" class="list-group-item">Leader 김현우</a>
 						<a href="#" class="list-group-item">Data 시경덕</a> 
 						<a href="#" class="list-group-item">Front-end 신연수</a>

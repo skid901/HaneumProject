@@ -28,22 +28,22 @@ let column_translation = {
 };
 
 let column_color = {
-	'Inventory': 'Crimson',
-	'AccountsReceivable': 'Coral',
-	'InventoryTotalAssets': 'Coral',
-	'TotalBorrowings': 'DarkGreen',
-	'TotalLiabilities': 'DarkBlue',
-	'TotalCapital': 'DarkViolet',
+	'Inventory': 'BlueViolet',
+	'AccountsReceivable': 'CornflowerBlue',
+	'InventoryTotalAssets': 'Gold',
+	'TotalBorrowings': 'LightGreen',
+	'TotalLiabilities': 'LightPink',
+	'TotalCapital': 'LightSalmon',
 
-	'Sales': 'FireBrick',
-	'CostofGoodsSold': 'GoldenRod',
-	'OperatingProfit': 'MediumSeaGreen',
-	'FinancialCosts': 'RoyalBlue',
-	'NetIncome': 'Plum',
+	'Sales': 'HotPink',
+	'CostofGoodsSold': 'LightSkyBlue',
+	'OperatingProfit': 'LightSlateGray',
+	'FinancialCosts': 'Sienna',
+	'NetIncome': 'Peru',
 
-	'OperatingActivitiesCashFlow': 'LightPink',
-    'InvestmentActivitiesCashFlow': 'LightGreen',
-    'FinancialActivitiesCashFlow': 'LightSalmon',
+	'OperatingActivitiesCashFlow': 'PaleVioletRed',
+    'InvestmentActivitiesCashFlow': 'MediumTurquoise',
+    'FinancialActivitiesCashFlow': 'Maroon',
 };
 
 let news;
@@ -64,10 +64,16 @@ $('#upload').ajaxForm({
 			console.log('totalData', totalData);
 			console.log('predictData', predictData)
 
+			$('#news_title').html(`<b>${totalData[0].CompanyName}</b>&nbsp;검색&nbsp;결과:`);
+			$('#analysis_title').html(`<b>${totalData[0].CompanyName}</b>&nbsp;분석&nbsp;결과:`);
+			$('#prediction_title').html(`<b>${totalData[0].CompanyName}</b>&nbsp;예측&nbsp;결과:`);
+
 			// 뉴스 데이터
 			$('#article_list').empty();
-			$('#news_title').html(`<b>${totalData[0].CompanyName}</b> 검색결과:`);
 			news.map(function(el, idx){
+				if(idx >= 6) {
+					return;
+				}
 				$('#article_list').append(`<a href='${el.originallink}' class="list-group-item" target="_blank">
 <h4 class="list-group-item-heading"><b>${el.title}</b></h4>
 <p class=\"list-group-item-text\">${el.description}</p>
@@ -102,6 +108,11 @@ $('#upload').ajaxForm({
 	}
 });
 
+$('.col_btn')
+	.css('border-width', '3px')
+	.css('margin', '1px')
+	.attr('width', '130px');
+
 $('.col_btn').on('click', function(event) {
 	let col_btn = event.target
 	let input = $(col_btn).children()[0];
@@ -110,14 +121,14 @@ $('.col_btn').on('click', function(event) {
 		let col_name = $(input).val();
 		checked_col_btn_list.push(col_name);
 		$(input).prop('checked', true);
-		$(col_btn).css('background-color', column_color[col_name]);
+		$(col_btn).css('border-color', column_color[col_name]);
 	} else {
 		let col_name = $(input).val();
 		checked_col_btn_list = checked_col_btn_list.filter(function(el){
 			return el !== col_name
 		});
 		$(input).prop('checked', false);
-		$(col_btn).css('background-color', 'white');
+		$(col_btn).css('border-color', 'LightGray');
 	}
 	$('#graph').empty();
 	getGraph(totalData, checked_col_btn_list);
@@ -129,13 +140,13 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 
 	let data = row_data;
 	
-	let svg = d3.select('svg');
-		// .attr('width', window.innerWidth * 500 / 1280);
+	let svg = d3.select('svg')
+		.attr('width', window.innerWidth * 760 / 1280);
 
 	let top = 20;
 	let right = 20;
 	let bottom = 20;
-	let left = 170;  // left: 40
+	let left = 130;  // left: 40
 
 	let margin = { 'top': top, 'right': right, 'bottom': bottom, 'left': left };
 	let width = + svg.attr('width') - left - right;
@@ -172,46 +183,63 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 	let xAxis = d3
 		.axisBottom(x)
 		.tickFormat(d3.timeFormat('%Y'))
-		.ticks(d3.timeYear);
-	let yAxis = d3.axisLeft(y);
+		.ticks(d3.timeYear)
+		.tickSize(-height);
+
+	let yAxis = d3
+		.axisLeft(y)
+		.tickSize(-width);
+
+	let zero_line = d3.line()
+		.x(d => x(d.Year))
+		.y(d => y(0));
+
+	chart
+		.append('path')
+		.datum(data)  // [data]
+		.attr('fill', 'none')
+		.attr('stroke', 'black')
+		.attr('stroke-width', 1.5)
+		.attr('d', zero_line);
+		// .attr('stroke-dasharray', '5,5')
+	
+	let earliest_year = d3.min(data, d => d.Year);
+
+	let year_line = d3.line()
+		.x(d => x(earliest_year))
+		.y(d => y(yMin));
+
+	chart
+		.append('path')
+		.datum(data)  // [data]
+		.attr('fill', 'none')
+		.attr('stroke', 'black')
+		.attr('stroke-width', 1.5)
+		.attr('d', year_line);
+		// .attr('stroke-dasharray', '5,5')
 
 	chart
 		.append('g')
 		.attr('transform', 'translate(0, ' + height + ')')
+		.attr('opacity', 0.7)
 		.call(xAxis);
-
+		
+	
 	chart
 		.append('g')
+		.attr('opacity', 0.7)
 		.call(yAxis);
 
-	
-	let div = d3
-		.select('body')
-		.append('div')
-		.attr('class', 'tooltip')
-		.style('opacity', 0)
-		.style('display', 'none')
-		.style('width', '160px')
-		.style('height', '65px');
+	let detail = {
+		'col': d3.select('#detail_col'),
+		'year': d3.select('#detail_year'),
+		'currency': d3.select('#detail_currency')
+	};
 
 	let formatTime = d3.timeFormat('%Y');
 
-	if (yMin < 0) {
-		let zero_line = d3.line()
-			.x(d => x(d.Year))
-			.y(d => y(0));
+	col_list.map(function(col_name) {
 
-		chart
-			.append('path')
-			.datum(data)  // [data]
-			.attr('fill', 'none')
-			.attr('stroke', 'black')
-			.attr('stroke-width', 1)
-			.attr('stroke-dasharray', '5,5')
-			.attr('d', zero_line);
-	}
-
-	col_list.map(function(col_name, idx) {
 		let col_line = d3.line()
 			.x(d => x(d.Year))
 			.y(d => y(d[col_name]))
@@ -230,7 +258,7 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 			.data(data)
 			.enter()
 			.append('circle')
-			.attr('r', 3)
+			.attr('r', 4)
 			.attr('cx', d => x(d.Year))
 			.attr('cy', d => y(d[col_name]))
 			.attr('class', `${col_name}Dots`)
@@ -239,36 +267,15 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 		chart
 			.selectAll(`.${col_name}Dots`)
 			.on('mouseover', d => {
-				div
-					.transition()
-					.duration(200)
-					.style('opacity', 0.9)
-					.style('display', 'block');
-	
-				div
-					.html(`<table>
-								<tr>
-									<td style="text-align: center;">연&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp도&nbsp;:</td>
-								</tr>
-								<tr>
-									<td style="text-align: center;">${formatTime(d.Year)}</td>
-								</tr>
-								<tr>
-									<td style="text-align: center;">${column_translation[col_name]}&nbsp;:</td>
-								</tr>
-								<tr>
-									<td style="text-align: center;">￦&nbsp;${Number(d[col_name]).toLocaleString('en')}</td>
-								</tr>
-							</table>`)
-					.style('left', (d3.event.pageX + 5) + 'px')
-					.style('top', (d3.event.pageY - 35) + 'px');
-			})
-			.on('mouseout', d => {
-				div
-					.transition()
-					.duration(500)
-					.style("opacity", 0);
+				detail['col'].html(column_translation[col_name]);
+				detail['year'].html(formatTime(d.Year));
+				detail['currency'].html(Number(d[col_name]).toLocaleString('en') + '&nbsp;원');
 			});
+			// .on('mouseout', d => {
+			// 	detail['col'].html('');
+			// 	detail['year'].html('');
+			// 	detail['currency'].html('');
+			// });
 		
 	});
 
