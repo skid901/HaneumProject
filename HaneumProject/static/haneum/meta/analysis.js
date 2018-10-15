@@ -46,10 +46,13 @@ let column_color = {
     'FinancialActivitiesCashFlow': 'Maroon',
 };
 
+let companyName;
 let news;
 let totalData;
 let predictData;
+let predictAverage;
 let checked_col_btn_list = [];
+let parseDate = d3.timeParse("%Y");
 
 $('#upload').ajaxForm({
 	url: "./upload",
@@ -57,16 +60,18 @@ $('#upload').ajaxForm({
 	dataType: "json",
 	success: function (result, status, xhr) {
 		if (result.status == 1) {
+			predictAverage = 0;
 			news = result.news;
 			totalData = result.data;
 			predictData = result.predict;
 			console.log('news', news);
 			console.log('totalData', totalData);
 			console.log('predictData', predictData)
+			companyName = totalData[0].CompanyName;
 
-			$('#news_title').html(`<b>${totalData[0].CompanyName}</b>&nbsp;검색&nbsp;결과:`);
-			$('#analysis_title').html(`<b>${totalData[0].CompanyName}</b>&nbsp;분석&nbsp;결과:`);
-			$('#prediction_title').html(`<b>${totalData[0].CompanyName}</b>&nbsp;예측&nbsp;결과:`);
+			$('#news_title').html(`<b>${companyName}</b>&nbsp;검색&nbsp;결과:`);
+			$('#analysis_title').html(`<b>${companyName}</b>&nbsp;분석&nbsp;결과:`);
+			$('#prediction_title').html(`<b>${companyName}</b>&nbsp;예측&nbsp;결과:`);
 
 			// 뉴스 데이터
 			$('#article_list').empty();
@@ -74,14 +79,19 @@ $('#upload').ajaxForm({
 				if(idx >= 6) {
 					return;
 				}
-				$('#article_list').append(`<a href='${el.originallink}' class="list-group-item" target="_blank">
-<h4 class="list-group-item-heading"><b>${el.title}</b></h4>
-<p class=\"list-group-item-text\">${el.description}</p>
-</a>`);
+				$('#article_list').append(
+`<a href='${el.originallink}' class="list-group-item" target="_blank">
+	<h4 class="list-group-item-heading">
+		<b>${el.title}</b>
+	</h4>
+	<p class=\"list-group-item-text\">
+		${el.description}
+	</p>
+</a>`
+				);
 			});
 
 			// 분석 데이터 그래프
-			let parseDate = d3.timeParse("%Y");
 			totalData = totalData.map(function(d) {
 				d.Year = parseDate(d.Year);
 				return d;
@@ -89,6 +99,24 @@ $('#upload').ajaxForm({
 			$('#graph').empty();
 			getGraph(totalData, checked_col_btn_list);
 
+			// 예측 데이터 그래프
+			predictData = predictData.map(function(d, idx) {
+				d.Year = parseDate(d.Year);
+				predictAverage = (predictAverage * idx + d.Bankruptcy) / (idx + 1);
+				return d;
+			});
+			console.log('predictAverage', predictAverage);
+			$('#prediction_graph').empty();
+			getPredictionGraph(predictData);
+			$('#bankruptcyGaugeContainer').empty();
+			initialize();
+			$('#prediction_content').empty();
+			$('#prediction_content').html(
+`<strong><span style="font-size: 30px;">${companyName}</span></strong>의<br>
+평균 예측 부도율은<br>
+<strong><span style="font-size: 40px;">${Math.floor(predictAverage*10000)/100}%</span></strong><br>
+입니다.`
+			);
 
 			$('#articles')
 				.css('display', 'block');
@@ -134,13 +162,11 @@ $('.col_btn').on('click', function(event) {
 	getGraph(totalData, checked_col_btn_list);
 });
 
-let svg = d3.select('svg');
-
 function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 
 	let data = row_data;
 	
-	let svg = d3.select('svg')
+	let svg = d3.select('#graph')
 		.attr('width', window.innerWidth * 760 / 1280);
 
 	let top = 20;
@@ -199,7 +225,7 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 		.datum(data)  // [data]
 		.attr('fill', 'none')
 		.attr('stroke', 'black')
-		.attr('stroke-width', 1.5)
+		.attr('stroke-width', 2)
 		.attr('d', zero_line);
 		// .attr('stroke-dasharray', '5,5')
 	
@@ -267,16 +293,235 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 		chart
 			.selectAll(`.${col_name}Dots`)
 			.on('mouseover', d => {
-				detail['col'].html(column_translation[col_name]);
-				detail['year'].html(formatTime(d.Year));
-				detail['currency'].html(Number(d[col_name]).toLocaleString('en') + '&nbsp;원');
+				let circle = d3
+					.select(d3.event.target);
+				circle
+					.attr('r', 6)
+					.style('fill', 'white')
+					.style('stroke', `${column_color[col_name]}`)
+					.style('stroke-width', '4');
+
+				detail['col']
+					.html(`<strong>${column_translation[col_name]}</strong>`);
+				detail['year']
+					.html(`<strong>${formatTime(d.Year)}</strong>`);
+				detail['currency']
+					.html(`<strong>${Number(d[col_name]).toLocaleString('en')}&nbsp;원</strong>`);			
+			})
+			.on('mouseout', d => {
+				let circle = d3
+					.select(d3.event.target);
+				circle
+					.attr('r', 4)
+					.style('fill', column_color[col_name])
+					.style('stroke', 'none')
+					.style('stroke-width', 'none');
+				detail['col']
+					.html(`${column_translation[col_name]}`);
+				detail['year']
+					.html(`${formatTime(d.Year)}`);
+				detail['currency']
+					.html(`${Number(d[col_name]).toLocaleString('en')}&nbsp;원`);	
 			});
-			// .on('mouseout', d => {
-			// 	detail['col'].html('');
-			// 	detail['year'].html('');
-			// 	detail['currency'].html('');
-			// });
 		
 	});
 
+}
+
+function getPredictionGraph(predictData) {
+
+	let data = predictData;
+
+	let svg = d3.select('#prediction_graph')
+		.attr('width', window.innerWidth * 760 / 1280);
+
+	let top = 20;
+	let right = 20;
+	let bottom = 20;
+	let left = 30;  // left: 40
+
+	let margin = { 'top': top, 'right': right, 'bottom': bottom, 'left': left };
+	let width = + svg.attr('width') - left - right;
+	let height = + svg.attr('height') - top - bottom;
+
+	let chart = svg
+		.append('g')
+		.attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+	let cover = svg
+		.append('g')
+		.attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+	let x = d3
+		.scaleBand()
+		.domain(data.map(d => d.Year))
+		.range([margin.left, width - margin.right])
+		.padding(0.4);
+	
+	let y = d3
+		.scaleLinear()
+		.domain([0, 1])
+		.nice()
+		.range([height - margin.bottom, margin.top]);
+		
+	let xAxis = d3
+		.axisBottom(x)
+		.tickFormat(d3.timeFormat('%Y'));
+	
+	let yAxis = d3
+		.axisLeft(y)
+		.tickFormat(d3.format(".0%"))
+		.tickSize(-width);
+
+	let tooltip = d3
+		.select('body')
+		.append('div')
+		.attr('class', 'tooltip')
+		.style('opacity', 0)
+		.style('display', 'none');
+		
+
+	// chart
+	// 	.selectAll('rect')
+	// 	.data(data)
+	// 	.enter()
+	// 	.append('rect')
+	// 		.attr('x', d => x(d.Year))
+	// 		.attr('y', d => y(d.Bankruptcy))
+	// 		.attr('height', d => y(0) - y(d.Bankruptcy))
+	// 		.attr('width', x.bandwidth())
+	// 		.style('fill', 'yellow');
+
+	let linearGradient = d3
+		.select('#prediction_graph')
+		.append('defs')
+			.append('linearGradient')
+				.attr('id', 'gradient')
+				.attr('x1', '0%')
+				.attr('y1', '0%')
+				.attr('x2', '0%')
+				.attr('y2', '100%');
+
+	linearGradient
+		.append('stop')
+			.attr('offset', '0%')
+			.style('stop-color', 'black')
+			.style('stop-opacity', '1');
+
+	linearGradient
+		.append('stop')
+			.attr('offset', '10%')
+			.style('stop-color', 'red')
+			.style('stop-opacity', '1');
+
+	linearGradient
+		.append('stop')
+			.attr('offset', '40%')
+			.style('stop-color', 'yellow')
+			.style('stop-opacity', '1');
+	
+	linearGradient
+		.append('stop')
+			.attr('offset', '70%')
+			.style('stop-color', 'green')
+			.style('stop-opacity', '1');
+	
+	chart
+		.selectAll('rect')
+		.data(data)
+		.enter()
+		.append('rect')
+			.attr('x', d => x(d.Year))
+			.attr('y', d => y(1))
+			.attr('height', d => y(0) - y(1))
+			.attr('width', x.bandwidth())
+			.style('fill', 'url(#gradient)');
+	
+	cover
+		.selectAll('rect')
+		.data(data)
+		.enter()
+		.append('rect')
+			.attr('x', d => x(d.Year))
+			.attr('y', d => y(1))
+			.attr('height', d => y(0) - y(d.NonBankruptcy))
+			.attr('width', x.bandwidth())
+			.style('fill', 'white')
+			.attr('stroke', 'white')
+			.attr('stroke-width', 3);
+
+	cover
+		.append("g")
+		.attr('transform', `translate(0, ${height})`)
+		.call(xAxis);
+
+	cover
+		.append("g")
+		.attr('opacity', 0.5)
+		.call(yAxis);
+
+	chart
+		.selectAll('rect')
+		.on('mouseover', d => {
+			tooltip
+				.style('opacity', 1)
+				.style('display', 'block')
+				.style('left', `${d3.event.pageX + 5}px`)
+				.style('top', `${d3.event.pageY - 45}px`)
+				.html(`<strong>Year:&nbsp;${d3.timeFormat('%Y')(d.Year)}
+Bankruptcy:&nbsp;<span style='color:red'>${Math.floor(d.Bankruptcy * 10000) / 100}%</span></strong>`);
+		})
+		.on('mouseout', d => {
+			tooltip
+				.style('opacity', 0);
+		});
+	
+}
+
+// 게이저 생성
+var gauges = [];
+
+function createGauge(name, label, min, max) {
+	var config =
+	{
+		size: 200,//120,
+		label: label,
+		min: undefined != min ? min : 0,
+		max: undefined != max ? max : 100,
+		minorTicks: 5
+	}
+
+	var range = config.max - config.min;
+	config.greenZones = [{ from: config.min, to: config.min + range * 0.3 }];
+	config.yellowZones = [{ from: config.min + range * 0.3, to: config.min + range * 0.6 }];
+	config.redZones = [{ from: config.min + range * 0.6, to: config.min + range * 0.9 }];
+	config.blackZones = [{ from: config.min + range * 0.9, to: config.max }];
+
+	gauges[name] = new Gauge(name + "GaugeContainer", config);
+	gauges[name].render();
+}
+
+function createGauges() {
+	createGauge("bankruptcy", "Bankruptcy");
+	//createGauge("cpu", "CPU");
+	//createGauge("network", "Network");
+	//createGauge("test", "Test", -50, 50 );
+}
+
+function updateGauges() {
+	for (var key in gauges) {
+		var value = getRandomValue(gauges[key])
+		gauges[key].redraw(value);
+	}
+}
+
+function getRandomValue(gauge) {
+	var overflow = 0; //10;
+	return gauge.config.min - overflow + (gauge.config.max - gauge.config.min + overflow * 2) * predictAverage; // Math.random();
+}
+
+function initialize() {
+	createGauges();
+	// setInterval(updateGauges, 5000);
+	updateGauges();
 }
