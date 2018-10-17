@@ -166,8 +166,8 @@ function getGraph(row_data, col_list) {  //, CompanyName, [col1, col2, col3]) {
 
 	let data = row_data;
 	
-	let svg = d3.select('#graph')
-		.attr('width', window.innerWidth * 760 / 1280);
+	let svg = d3.select('#graph');
+		//.attr('width', window.innerWidth * 760 / 1280);
 
 	let top = 20;
 	let right = 20;
@@ -332,8 +332,8 @@ function getPredictionGraph(predictData) {
 
 	let data = predictData;
 
-	let svg = d3.select('#prediction_graph')
-		.attr('width', window.innerWidth * 760 / 1280);
+	let svg = d3.select('#prediction_graph');
+		//.attr('width', window.innerWidth * 760 / 1280);
 
 	let top = 20;
 	let right = 20;
@@ -379,18 +379,6 @@ function getPredictionGraph(predictData) {
 		.attr('class', 'tooltip')
 		.style('opacity', 0)
 		.style('display', 'none');
-		
-
-	// chart
-	// 	.selectAll('rect')
-	// 	.data(data)
-	// 	.enter()
-	// 	.append('rect')
-	// 		.attr('x', d => x(d.Year))
-	// 		.attr('y', d => y(d.Bankruptcy))
-	// 		.attr('height', d => y(0) - y(d.Bankruptcy))
-	// 		.attr('width', x.bandwidth())
-	// 		.style('fill', 'yellow');
 
 	let linearGradient = d3
 		.select('#prediction_graph')

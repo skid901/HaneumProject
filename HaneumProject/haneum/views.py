@@ -115,24 +115,38 @@ def upload(reqeust):
             return_json['news'] = news_json['items']
 
             # 예측 모델 수행
-            # financial_index = predict.financial_data()
-            # df = predict.append_financial_Index(df, financial_index)
-            # predict_data = predict.create_dataset(df, 3)
-            # X_predict = predict_data.tolist()
-            # x_year = np.array(df['Year'][-1*predict_data.shape[0]:]).reshape(predict_data.shape[0],1)
+            financial_index = predict.financial_data()
+            df = predict.append_financial_Index(df, financial_index)
+            predict_data = predict.create_dataset(df, 3)
+            X_predict = predict_data.tolist()
+            x_year = np.array(df['Year'][-1*predict_data.shape[0]:]).reshape(predict_data.shape[0],1)
             
-            # saved_model_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
-            # saved_model_name = 'finalized_model_2.sav'  # 'model.sav'  # 'finalized_model.sav'
+            saved_model_root =  STATICFILES_DIRS[0] + '\\haneum\\data'
+            saved_model_name = 'finalized_model_2.sav'  # 'model.sav'  # 'finalized_model.sav'
 
-            # loaded_model = pickle.load(open('%s\\%s' % (saved_model_root, saved_model_name), 'rb'))
-            # Y_predict = loaded_model.predict_proba(X_predict)
-            # predict_list = np.hstack([x_year, Y_predict]).tolist()
-            # logger.info('predict_list')
-            # logger.info(predict_list)
-            # predict_json_list = []
-            # for el in predict_list:
-            #     predict_json_list.append({'Year': el[0], 'NonBankruptcy': el[1], 'Bankruptcy': el[2]})
-            # return_json['predict'] = predict_json_list
+            loaded_model = pickle.load(open('%s\\%s' % (saved_model_root, saved_model_name), 'rb'))
+            Y_predict = loaded_model.predict_proba(X_predict)
+            predict_list = np.hstack([x_year, Y_predict]).tolist()
+            logger.info('predict_list')
+            logger.info(predict_list)
+            predict_json_list = []
+            for el in predict_list:
+                predict_json_list.append({'Year': el[0], 'NonBankruptcy': el[1], 'Bankruptcy': el[2]})
+
+            # predict_json_list = [
+            #     {'Year': 2011, 'NonBankruptcy': 0.07, 'Bankruptcy': 0.92},
+            #     {'Year': 2012, 'NonBankruptcy': 0.17, 'Bankruptcy': 0.82},
+            #     {'Year': 2013, 'NonBankruptcy': 0.27, 'Bankruptcy': 0.72},
+            #     {'Year': 2014, 'NonBankruptcy': 0.37, 'Bankruptcy': 0.62},
+            #     {'Year': 2015, 'NonBankruptcy': 0.47, 'Bankruptcy': 0.52},
+            #     {'Year': 2016, 'NonBankruptcy': 0.57, 'Bankruptcy': 0.42},
+            #     {'Year': 2017, 'NonBankruptcy': 0.67, 'Bankruptcy': 0.32},
+            #     {'Year': 2018, 'NonBankruptcy': 0.77, 'Bankruptcy': 0.22},
+            #     {'Year': 2019, 'NonBankruptcy': 0.87, 'Bankruptcy': 0.12},
+            #     {'Year': 2020, 'NonBankruptcy': 0.97, 'Bankruptcy': 0.02}
+            # ]
+
+            return_json['predict'] = predict_json_list
 
             # 업로드 파일 삭제
             '''
